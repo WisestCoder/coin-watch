@@ -1,0 +1,46 @@
+{
+  "name": "@wisestcoder/coin-watch",
+  "version": "0.0.1-alpha.1",
+  "description": "加密货币命令行工具",
+  "author": "mochen.du",
+  "bin": {
+    "coin": "bin/index.js"
+  },
+  "license": "ISC",
+  "scripts": {
+    "start": "npm run dev",
+    "dev": "tsc --watch",
+    "build": "tsc",
+    "test": "jest",
+    "test:coverage": "jest --coverage"
+  },
+  "main": "dist/index.js",
+  "gitHooks": {
+    "pre-commit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.{js,jsx,less,md,json}": [
+      "prettier --write"
+    ],
+    "*.ts?(x)": [
+      "prettier --parser=typescript --write"
+    ]
+  },
+  "dependencies": {
+    "axios": "^0.21.1",
+    "cli-spinner": "^0.2.10",
+    "commander": "^7.2.0",
+    "inquirer": "^8.0.0",
+    "log-symbols": "^4.1.0",
+    "mkdirp": "^1.0.4"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.19",
+    "@types/node": "^14.14.12",
+    "jest": "^26.6.3",
+    "typescript": "^3.8.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
