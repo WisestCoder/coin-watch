@@ -13,6 +13,7 @@ type AuthProps = {
   manual?: {
     [p: string]: Array<string>
   }
+  effects?: Array<string>
 }
 
 /**

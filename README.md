@@ -36,7 +36,7 @@ Options:
   -h, --help            display help for command
 ```
 
-### currency
+#### currency
 
 查看某一个货币信息
 
@@ -45,4 +45,39 @@ coin currency [coinType] # @example: coin currency btc
 
 Options:
   -c, --convert <type>  兑换币种
+```
+
+#### manual
+
+添加、查看、删除自选货币信息
+
+```bash
+coin manual
+
+Options:
+  -a, --add     添加币种
+  -r, --remove  删除币种
+  -l, --list    查看添加的币种信息
+```
+
+### 自定义信息
+
+命令行工具在第一次初始化的时候，会在用户目录下创建一份配置信息的JSON，所以可以手动修改文件该来更新配置信息
+
+```json
+{
+  "token": "1e2992b4-437d-44g2-9d02-9fkw392mf94", // token
+  "manual": { // 自选币种信息，按照兑换币种来分类
+    "USD": [
+      "cake" // 查询cake的USD价格
+    ],
+    "BTC": [
+      "near" // 查询near的BTC价格
+    ]
+  },
+  "effects": [ // 查询币种时显示的字段，传空显示全部 price,volume_24h,percent_change_1h,percent_change_24h,percent_change_7d,percent_change_30d,percent_change_60d,percent_change_90d
+    "price",
+    "volume_24h"
+  ]
+}
 ```

@@ -1,9 +1,10 @@
-import chalk from 'chalk';
-import logSymbols from 'log-symbols';
+import chalk from 'chalk'
+import logSymbols from 'log-symbols'
+import { getAuth } from './fetch'
 
 type LoggerProps = {
   color?: string,
-  title: string,
+  title?: string,
   symbol?: 'success'|'warning'|'info'|'error',
   prefix?: string
   suffix?: string
@@ -43,6 +44,16 @@ const LIST_OPTIONS = [
   { key: 'percent_change_90d', title: '1季度上涨百分比' }
 ]
 
+export function getPriceOptions() {
+  const { effects } = getAuth()
+
+  if (!(effects && effects.length)) {
+    return LIST_OPTIONS
+  }
+
+  return LIST_OPTIONS.filter((item) => effects.includes(item.key))
+}
+
 export function loggerPrice({ symbol, name, convertInfo }) {
   logger({
     title: `${symbol}(${name})`,
@@ -50,7 +61,8 @@ export function loggerPrice({ symbol, name, convertInfo }) {
     color: 'green'
   })
 
-  LIST_OPTIONS.forEach(({ key, title }) => {
+  const listOptions = getPriceOptions()
+  listOptions.forEach(({ key, title }) => {
     const number = Number(convertInfo[key])
 
     logger({
