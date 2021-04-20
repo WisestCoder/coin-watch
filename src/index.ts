@@ -18,7 +18,7 @@ program.version(require('../package.json').version);
 program
   .command('list')
   .description('查看货币列表（分页）')
-  .option('-l, --start <start>', '页码')
+  .option('-s, --start <start>', '页码')
   .option('-l, --limit <limit>', '每页条数')
   .option('-c, --convert <type>', '兑换币种')
   .action((options) => {
@@ -51,6 +51,21 @@ program
       }
     }).start()
   })
+
+program
+  .command('manual')
+  .description('维护手动添加的货币')
+  .option('-a, --add', '添加币种')
+  .option('-r, --remove', '删除币种')
+  .option('-l, --list', '查看添加的币种信息')
+  .action((options) => {
+    new Context({
+      command: 'manual',
+      homeDir,
+      args: options
+    }).start()
+  })
+
 
 program
   .command('token')

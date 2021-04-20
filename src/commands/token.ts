@@ -6,7 +6,7 @@ module.exports = async function token(ctx) {
   const { token } = await inquirer.prompt([
     {
       type: 'input',
-      name: 'token', // 不知道为啥登录系统硬要把userNo叫成userNo
+      name: 'token',
       message: '请输入Token',
       validate: (value) => {
         if (!value) {

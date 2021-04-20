@@ -2,17 +2,25 @@ import axios from 'axios'
 import fs from 'fs'
 import os from 'os'
 import { join } from 'path'
-import logger from './logger'
+import logger, { loggerPrice } from './logger'
+import spinner from './spinner'
 
 const AUTH_PATH = join(os.homedir(), '.coin', 'auth.json');
 const BASE_REQUEST_URL = 'https://pro-api.coinmarketcap.com'
+
+type AuthProps = {
+  token?: string
+  manual?: {
+    [p: string]: Array<string>
+  }
+}
 
 /**
  * 获取认证信息
  * @returns
  */
 export function getAuth() {
-  let auth = {} as { token?: string }
+  let auth = {} as AuthProps
   try {
     auth = JSON.parse(fs.readFileSync(AUTH_PATH, 'utf-8')) || {};
   } finally {
@@ -56,16 +64,25 @@ fetch.interceptors.response.use(
       process.exit(1)
     },
     (error) => {
-      const { response } = error
-      if (response.status === 401) {
-        logger({
-          symbol: 'error',
-          color: 'red',
-          title: '认证失败'
-        })
-      }
+      const { response = {} } = error
+      logger({
+        symbol: 'error',
+        color: 'red',
+        title: response.status === 401 ? '认证失败' : '查询失败'
+      })
       process.exit(1)
     }
   )
 
 export default fetch
+
+export async function fetchCurrency({ symbol, convert }) {
+  spinner.start('正在查询货币信息')
+  const { data = {} } = await fetch({
+    url: 'v1/cryptocurrency/quotes/latest',
+    method: 'get',
+    params: { symbol, convert }
+  })
+  spinner.stop(true)
+  return data
+}
