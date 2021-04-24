@@ -14,6 +14,7 @@ type AuthProps = {
     [p: string]: Array<string>
   }
   effects?: Array<string>
+  possess?: Record<string, number>
 }
 
 /**

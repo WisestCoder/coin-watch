@@ -1,17 +1,17 @@
-import inquirer from 'inquirer';
-import fetch, { fetchCurrency, getAuth, setAuth } from '../utils/fetch'
+import inquirer from 'inquirer'
+import chalk from 'chalk'
+import { fetchCurrency, getAuth, setAuth } from '../utils/fetch'
 import logger, { loggerPrice } from '../utils/logger'
-import spinner from '../utils/spinner'
 import { uniqueArr } from '../utils/const'
 
 module.exports = async function currency(ctx) {
   const { add, remove } = ctx.commandArgs || {}
   const auth = getAuth()
-  const { manual = {} } = auth
+  const { manual = {}, possess = {} } = auth
 
   // 添加货币
   if (add) {
-    const { currency, convert } = await inquirer.prompt([
+    const { currency, convert, hold } = await inquirer.prompt([
       {
         type: 'input',
         name: 'currency',
@@ -34,6 +34,18 @@ module.exports = async function currency(ctx) {
           }
           return true
         }
+      },
+      {
+        type: 'input',
+        name: 'hold',
+        message: '请输入你的持仓个数',
+        default: '0',
+        validate: (value) => {
+          if (value && !/^(0|[1-9][0-9]*)(\.\d+)?$/.test(value)) {
+            return '请输入正整数！'
+          }
+          return true
+        }
       }
     ])
 
@@ -41,8 +53,9 @@ module.exports = async function currency(ctx) {
       manual[convert] = []
     }
     manual[convert] = uniqueArr([...manual[convert], currency])
+    possess[currency.toLowerCase()] = Number(hold) || 0
 
-    setAuth({ manual })
+    setAuth({ manual, possess })
     return
   }
 
@@ -81,9 +94,10 @@ module.exports = async function currency(ctx) {
     deletes.forEach((item) => {
       const { currency, convert } = item
       manual[convert] = manual[convert].filter((x) => x !== currency)
+      delete possess[currency]
     })
 
-    setAuth({ manual })
+    setAuth({ manual, possess })
     logger({
       symbol: 'success',
       color: 'green',
@@ -93,7 +107,7 @@ module.exports = async function currency(ctx) {
     return
   }
 
-
+  // 查询自选货币信息
   Object.keys(manual).forEach(async (convert) => {
     const currencyList = manual[convert] || []
     if (!currencyList.length) {
@@ -105,15 +119,23 @@ module.exports = async function currency(ctx) {
       convert
     })
 
+    let total = 0
     Object.keys(data).forEach((key) => {
       const symbolInfo = data[key] || {}
       const quote = symbolInfo.quote || {}
+      const convertInfo = quote[convert] || {}
 
       loggerPrice({
         symbol: symbolInfo.symbol,
         name: symbolInfo.name,
-        convertInfo: quote[convert] || {}
+        convertInfo
       })
+
+      total += convertInfo.price * (possess[symbolInfo.symbol.toLowerCase()] || 0)
+    })
+    logger({
+      symbol: 'success',
+      title: `当前总持仓(${chalk.green(convert)})：${chalk.cyan(total)}`
     })
   })
 }

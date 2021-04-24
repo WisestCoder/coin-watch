@@ -68,7 +68,7 @@ export function loggerPrice({ symbol, name, convertInfo }) {
     logger({
       symbol: 'success',
       title: `${title} ${chalk[number > 0 ? 'green' : 'red'](convertInfo[key] || '')}`,
-      prefix: ' '
+      prefix: ' ',
     })
   })
 }
